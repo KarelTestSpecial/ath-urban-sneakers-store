@@ -1,0 +1,15 @@
+/* Athena Modern Theme - Neutral Base */
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #3b82f6;
+  --color-secondary: #f1f5f9;
+}
+
+@layer base {
+  img {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+}
