@@ -17,7 +17,7 @@ if (fs.existsSync(pluginPath)) {
 }
 
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/ath-urban-sneakers-store/' : '/', 
+  base: '/urban-sneakers-store/', 
   plugins: [
     react(),
     tailwindcss(),

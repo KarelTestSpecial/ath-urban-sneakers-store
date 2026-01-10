@@ -38,11 +38,14 @@ export default function EditableImage({ src, alt, className, cmsBind, ...props }
       setIsUploading(true);
       
       try {
-        await fetch('/__athena/upload', {
+        const uploadRes = await fetch('/__athena/upload', {
           method: 'POST',
           headers: { 'X-Filename': file.name },
           body: file
         });
+        const uploadData = await uploadRes.json();
+        
+        if (!uploadData.success) throw new Error(uploadData.error || "Upload failed");
 
         await fetch('/__athena/update-json', {
             method: 'POST',
@@ -50,7 +53,7 @@ export default function EditableImage({ src, alt, className, cmsBind, ...props }
                 file: cmsBind.file,
                 index: cmsBind.index || 0,
                 key: cmsBind.key,
-                value: file.name
+                value: uploadData.filename
             })
         });
 
