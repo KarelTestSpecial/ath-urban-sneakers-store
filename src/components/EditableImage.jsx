@@ -3,10 +3,6 @@ import React, { useState } from 'react';
 /**
  * EditableImage
  * Wraps a standard img tag. In Development, it allows dragging a new image onto it.
- * 
- * Props:
- * - srcBound: (Optional) If provided, overrides src directly from CMS logic.
- * - cmsBind: { file: "Hero", key: "afbeelding", index: 0 }
  */
 export default function EditableImage({ src, alt, className, cmsBind, ...props }) {
   const isDev = import.meta.env.DEV;
@@ -42,16 +38,12 @@ export default function EditableImage({ src, alt, className, cmsBind, ...props }
       setIsUploading(true);
       
       try {
-        // 1. Upload File
         await fetch('/__athena/upload', {
           method: 'POST',
-          headers: {
-            'X-Filename': file.name
-          },
+          headers: { 'X-Filename': file.name },
           body: file
         });
 
-        // 2. Update JSON
         await fetch('/__athena/update-json', {
             method: 'POST',
             body: JSON.stringify({
@@ -62,9 +54,7 @@ export default function EditableImage({ src, alt, className, cmsBind, ...props }
             })
         });
 
-        // 3. Reload Page to show changes
         window.location.reload();
-
       } catch (err) {
         console.error("Edit error:", err);
         alert("Fout bij updaten: " + err.message);
@@ -77,23 +67,32 @@ export default function EditableImage({ src, alt, className, cmsBind, ...props }
   return (
     <div 
       className={`relative group ${className}`} 
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
       onDragOver={handleDragOver} 
       onDragLeave={handleDragLeave} 
       onDrop={handleDrop}
+      style={{ cursor: 'pointer' }}
     >
       <img src={src} alt={alt} className="w-full h-full object-cover" {...props} />
       
-      {/* Overlay UI for Dev Mode */}
-      <div className={`absolute inset-0 bg-blue-500/50 flex items-center justify-center transition-opacity pointer-events-none ${isHovering ? 'opacity-100' : 'opacity-0 group-hover:opacity-10'}`}>
-        <span className="text-white font-bold bg-black/50 px-3 py-1 rounded">
-          {isUploading ? "Uploading..." : "Sleep afbeelding hier"}
-        </span>
-      </div>
-      
-      {/* Debug Info */}
-      <div className="absolute top-0 right-0 bg-yellow-300 text-xs px-1 opacity-0 group-hover:opacity-100 pointer-events-none">
-        Wait: {cmsBind.file}.{cmsBind.key}
-      </div>
+      {/* 
+          OVERLAY - Altijd in het midden, zichtbaar bij hover of drag 
+          We gebruiken inline style voor opacity om Tailwind-conflicten te vermijden
+      */}
+      {cmsBind && (
+        <div 
+          className="absolute inset-0 bg-blue-500/40 flex items-center justify-center transition-opacity duration-300 pointer-events-none"
+          style={{ 
+            opacity: isHovering ? 1 : 0,
+            zIndex: 50 
+          }}
+        >
+          <span className="text-white font-black bg-black/60 px-4 py-2 rounded-lg text-xs uppercase tracking-widest shadow-2xl border border-white/20">
+            {isUploading ? "⏳ Uploaden..." : "📸 Sleep foto hier"}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
