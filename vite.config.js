@@ -17,7 +17,7 @@ if (fs.existsSync(pluginPath)) {
 }
 
 export default defineConfig({
-  base: '/urban-sneakers-store/', 
+  base: '/ath-urban-sneakers-store/', 
   plugins: [
     react(),
     tailwindcss(),
